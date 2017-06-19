@@ -38,6 +38,7 @@ public class ZkClientInitBean implements InitializingBean{
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		if(zkClient == null) {return;}
 		if(iZkStateListener != null){
 			for(IZkStateListener listener : iZkStateListener){
 				zkClient.subscribeStateChanges(listener);

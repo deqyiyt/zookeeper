@@ -2,8 +2,6 @@ package com.ias.assembly.zkpro.zk.listener;
 
 import org.I0Itec.zkclient.IZkStateListener;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +14,6 @@ import com.ias.assembly.zkpro.zk.bean.ZkStateChangeManager;
  */
 @Service
 public class IZkStateListenerImpl implements IZkStateListener {
-	
-	
-	protected static final Logger logger = LoggerFactory.getLogger(IZkStateListenerImpl.class);
-	
 	@Autowired
 	private ZkStateChangeManager zkStateChangeManager;
 	 

@@ -27,7 +27,7 @@ public class TestApplication extends SpringBootServletInitializer{
     public static void main(String[] args) throws Exception {
         ApplicationContext ctx = new SpringApplicationBuilder()
                 .sources(TestApplication.class)
-                .web(false) // 把项目设置成非web环境
+//                .web(false) // 把项目设置成非web环境
                 .run(args);
 
         CountDownLatch closeLatch = ctx.getBean(CountDownLatch.class);

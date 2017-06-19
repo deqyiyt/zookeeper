@@ -93,54 +93,56 @@ public class ZookeeperConfigurer extends PropertyPlaceholderConfigurer implement
 			throws BeansException {
 		String zkhost = zkprops.getProperty("ias.zk.cofing.host");
 		String znodes = zkprops.getProperty("ias.zk.cofing.root");
-		try {
-			zk = new ZooKeeper(zkhost, 30000, this);
-		} catch (IOException e) {
-			log.error("Failed to connect to zk server" + zkhost, e);
-			throw new ApplicationContextException("Failed to connect to zk server" + zkhost, e);
-		}
-		try {
-			for (String znode : znodes.split(",")) {
-				List<String> children = zk.getChildren(znode.trim(), true);
-				for (String child : children) {
-					try {
-						byte[] data = zk.getData(znode + "/" + child, null, null);
-						String value = "";
-						if(data != null) {
-							value = new String(data);
+		if(zkhost != null && !"".equals(zkhost)) {
+			try {
+				zk = new ZooKeeper(zkhost, 30000, this);
+			} catch (IOException e) {
+				log.error("Failed to connect to zk server" + zkhost, e);
+				throw new ApplicationContextException("Failed to connect to zk server" + zkhost, e);
+			}
+			try {
+				for (String znode : znodes.split(",")) {
+					List<String> children = zk.getChildren(znode.trim(), true);
+					for (String child : children) {
+						try {
+							byte[] data = zk.getData(znode + "/" + child, null, null);
+							String value = "";
+							if(data != null) {
+								value = new String(data);
+							}
+							if(value != null && value.startsWith("/") && zk.exists(value, true) != null) {
+								log.info("Zookeeper pathKey:{}\t value:{}", child, value);
+								zkprops.setProperty(child, value);
+								setProperty(zkprops, value);
+							} else {
+								log.info("Zookeeper key:{}\t value:{}", child, value);
+								zkprops.setProperty(child, value);
+							}
+						} catch (Exception e) {
+							log.error("Read property(key:{}) error", child);
+							log.error("Exception:", e);
 						}
-						if(value != null && value.startsWith("/") && zk.exists(value, true) != null) {
-							log.info("Zookeeper pathKey:{}\t value:{}", child, value);
-							zkprops.setProperty(child, value);
-							setProperty(zkprops, value);
-						} else {
-							log.info("Zookeeper key:{}\t value:{}", child, value);
-							zkprops.setProperty(child, value);
-						}
-					} catch (Exception e) {
-						log.error("Read property(key:{}) error", child);
-						log.error("Exception:", e);
 					}
 				}
-			}
-		} catch (KeeperException e) {
-			log.error("Failed to get property from zk server" + zkhost, e);
-			throw new ApplicationContextException("Failed to get property from zk server" + zkhost, e);
-		} catch (InterruptedException e) {
-			log.error("Failed to get property from zk server" + zkhost, e);
-			throw new ApplicationContextException("Failed to get property from zk server" + zkhost, e);
-		} finally {
-			try {
-				zk.close();
+			} catch (KeeperException e) {
+				log.error("Failed to get property from zk server" + zkhost, e);
+				throw new ApplicationContextException("Failed to get property from zk server" + zkhost, e);
 			} catch (InterruptedException e) {
-				log.error("Error found when close zookeeper connection.", e);
+				log.error("Failed to get property from zk server" + zkhost, e);
+				throw new ApplicationContextException("Failed to get property from zk server" + zkhost, e);
+			} finally {
+				try {
+					zk.close();
+				} catch (InterruptedException e) {
+					log.error("Error found when close zookeeper connection.", e);
+				}
 			}
+	
+			Properties overProps = queryOverrideLocation();
+			// 将扩展的properties信息覆盖zookeeper获取的属性
+			copyProperties(zkprops, overProps);
+			saveProperties(zkprops);
 		}
-
-		Properties overProps = queryOverrideLocation();
-		// 将扩展的properties信息覆盖zookeeper获取的属性
-		copyProperties(zkprops, overProps);
-		saveProperties(zkprops);
 		super.processProperties(beanFactoryToProcess, zkprops);
 	}
 	
