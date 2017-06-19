@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.I0Itec.zkclient.ZkClient;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,19 +13,16 @@ import com.ias.assembly.zkpro.zk.listener.IZkStateListenerImpl;
 import com.ias.assembly.zkpro.zk.prop.ZkProp;
 import com.ias.assembly.zkpro.zk.util.IpUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class TaskLockCustomStateManagerImpl implements TaskLockCustomStateManager {
-
-	protected static final Logger logger = LoggerFactory.getLogger(TaskLockCustomStateManagerImpl.class);
-
 	@Autowired
 	private ZkClient zkClient;
-
 	@Autowired(required = false)
 	private TaskWarningManager taskWarningManager;
-
 	private boolean isConnected = true;
-
 	@Autowired(required = false)
 	private TaskLogManager taskLogManager;
 
@@ -36,16 +31,12 @@ public class TaskLockCustomStateManagerImpl implements TaskLockCustomStateManage
 
 	/**
 	 * 输出日志
-	 * 
 	 * @param con
 	 */
 	private void info(String con) {
-
-		logger.info(con);
-
+		log.info(con);
 		if (taskLogManager != null)
 			taskLogManager.log(con, ZkExpired.class);
-
 	}
 
 	private synchronized void setConnectState(boolean isConn) {
@@ -58,7 +49,6 @@ public class TaskLockCustomStateManagerImpl implements TaskLockCustomStateManage
 
 	/**
 	 * Disconnected 表示断开 SyncConnected 表示重连上 Expired session过期
-	 * 
 	 * 如果session过期时，任务标志结点已经消失，本地还有任务在执行，那其它service结点有可能会并发执行任务 所以最好是检查一下数据
 	 */
 	public void handleStateChanged(KeeperState state) throws Exception {
