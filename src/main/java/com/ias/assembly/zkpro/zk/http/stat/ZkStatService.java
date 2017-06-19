@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,7 +37,6 @@ import org.springframework.util.StringUtils;
 import com.ias.assembly.zkpro.zk.bean.ZkSerializerImpl;
 import com.ias.assembly.zkpro.zk.http.bean.Ztree;
 import com.ias.assembly.zkpro.zk.http.json.JsonUtil;
-import com.ias.assembly.zkpro.zk.http.util.CookieUtils;
 
 public final class ZkStatService implements ZkStatServiceMBean {
 	
@@ -48,7 +46,6 @@ public final class ZkStatService implements ZkStatServiceMBean {
     public final static int RESULT_CODE_ERROR  = -1;
     
     public static final String ZK_HOST = "zk-manager-host";
-    public static final String ZK_PATH = "zk-manager-path";
     
     public static final String HOST_NAME = "host";
     public static final String PATH_NAME = "path";
@@ -95,7 +92,6 @@ public final class ZkStatService implements ZkStatServiceMBean {
     	}
 		String path = request.getParameter(PATH_NAME);
 		path = path.replaceAll("//+", "/");
-		CookieUtils.addCookie(request, response, ZK_PATH, path, -1, null);
 		if(client.exists(path)) {
 			client.deleteRecursive(path);
 			return returnJSONResult(RESULT_CODE_SUCCESS, "删除成功");
@@ -111,7 +107,6 @@ public final class ZkStatService implements ZkStatServiceMBean {
 		String path = request.getParameter(PATH_NAME);
 		path = path.replaceAll("//+", "/");
 		String data = request.getParameter("data");
-		CookieUtils.addCookie(request, response, ZK_PATH, path, -1, null);
 		if(client.exists(path)) {
 			client.writeData(path, data);
 			return returnJSONResult(RESULT_CODE_SUCCESS, "修改成功");
@@ -131,7 +126,6 @@ public final class ZkStatService implements ZkStatServiceMBean {
 		String oldData = client.readData(path);
 		if (oldData == null || oldData instanceof String) {
 			client.writeData(path, data);
-			CookieUtils.addCookie(request, response, ZK_PATH, path, -1, null);
 			return returnJSONResult(RESULT_CODE_SUCCESS, null);
 		} else {
 			return returnJSONResult(RESULT_CODE_ERROR, null);
@@ -215,25 +209,12 @@ public final class ZkStatService implements ZkStatServiceMBean {
     		return returnJSONResult(RESULT_CODE_SUCCESS, null);
     	}
     	path = path.replaceAll("//+", "/");
-    	CookieUtils.addCookie(request, response, ZK_PATH, path, -1, null);
     	return returnJSONResult(RESULT_CODE_SUCCESS, client.readData(path));
     }
     
     private String tree(HttpServletRequest request, HttpServletResponse response) {
     	String host = request.getParameter(HOST_NAME);
-    	if(StringUtils.isEmpty(host)) {
-    		Cookie cookie = CookieUtils.getCookie(request, ZK_HOST);
-    		if(cookie != null) {
-    			host = cookie.getValue();
-    		}
-    	}
     	String path = request.getParameter(PATH_NAME);
-    	if(StringUtils.isEmpty(path)) {
-    		Cookie cookie = CookieUtils.getCookie(request, ZK_PATH);
-    		if(cookie != null) {
-    			path = cookie.getValue();
-    		}
-    	}
     	if(StringUtils.isEmpty(host)) {
     		return returnJSONResult(RESULT_CODE_SUCCESS, null);
     	}
@@ -241,8 +222,6 @@ public final class ZkStatService implements ZkStatServiceMBean {
     		path = "/";
     	}
     	request.getSession().setAttribute(ZK_HOST, host);
-    	CookieUtils.addCookie(request, response, ZK_HOST, host, -1, null);
-    	CookieUtils.addCookie(request, response, ZK_PATH, path, -1, null);
     	
     	ZkClient client = clientMap.get(host);
     	if(client == null) {

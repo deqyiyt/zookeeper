@@ -14,23 +14,27 @@ var setting = {
 
 function initTree() {
 	saveTreeStatus();
-	$.ajax({
-		data:{
-			host:$(".zk-host").val()
-			,path:$(".zk-root").val()
-		},
-		type: 'POST',
-		dataType : "json",
-		url: "tree.json",
-		success:function(data){
-			if(data.ResultCode && data.Content && data.Content.length > 0) {
-				$.fn.zTree.init($("#treeDemo"), setting, data.Content);
-				rander();
-			} else {
-				$('#treeDemo').html("没查询到数据");
+	if($(".zk-host").val()) {
+		$.ajax({
+			data:{
+				host:$(".zk-host").val()
+				,path:$(".zk-root").val()
+			},
+			type: 'POST',
+			dataType : "json",
+			url: "tree.json",
+			success:function(data){
+				if(data.ResultCode && data.Content && data.Content.length > 0) {
+					$.fn.zTree.init($("#treeDemo"), setting, data.Content);
+					rander();
+					$.cookie("zk_manager_host", $(".zk-host").val());
+					$.cookie("zk_manager_path", $(".zk-root").val());
+				} else {
+					$('#treeDemo').html("没查询到数据");
+				}
 			}
-		}
-	});
+		});
+	}
 }
 function rander() {
 	var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
@@ -43,9 +47,6 @@ function rander() {
 }
 function randerTree(oldData, nodes, zTree) {
 	for(var i=0;i<nodes.length;i++){
-		if(nodes[i].name == "/zookeeper") {
-			console.log(nodes[i]);
-		}
 		var data = oldData[nodes[i].name];
 		if(data) {
 			if(data.open) {
@@ -92,6 +93,9 @@ function readTree(oldData, nodes) {
 	return oldData;
 }
 $(function() {
+	$(".zk-host").val($.cookie("zk_manager_host") || "");
+	$(".zk-root").val($.cookie("zk_manager_path") || "");
+	
 	initTree();
 	
 	$('.update-zk').click(function() {
