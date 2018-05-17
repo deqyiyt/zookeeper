@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>zookeeper 管理</title>
+    <script type="text/javascript" src="scripts/js/jquery.min.js"></script>
+    <style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		
+		body {
+			
+		}
+		
+		.loginBox {
+			width: 300px;
+			height: 300px;
+			padding: 0 20px;
+			border: 1px solid #fff;
+			color: #000;
+			margin-top: 40px;
+			border-radius: 8px;
+			background: white;
+			box-shadow: 0 0 15px #222;
+			background: -moz-linear-gradient(top, #fff, #efefef 8%);
+			background: -webkit-gradient(linear, 0 0, 0 100%, from(#f6f6f6),
+				to(#f4f4f4));
+			font: 11px/1.5em 'Microsoft YaHei';
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			margin-left: -150px;
+			margin-top: -315px;
+		}
+		
+		.loginBox h2 {
+			height: 45px;
+			font-size: 30px;
+			font-weight: normal;
+		}
+		
+		.loginBox input {
+		
+			height: 28px;
+			margin-left: 40px;
+			
+		}
+		
+		.loginBox .left {
+		
+			height: 100%;
+			padding-right: 30px;
+		}
+		</style>
+
+</head>
+<body>
+  	<div class="container">
+		<section class="loginBox row-fluid">
+			<section><h2 style="text-align: center;margin-top: 50px">zookooper管理</h2></section>
+			<form id="loginForm" method="post" autocomplete="off" >
+			<section class="span7 left">
+				<!-- <h2>用户登录</h2> -->
+				<div style="float: left;">
+					<label style="float: left;">用户</label><input style="float: left;" type="text" name="loginUsername" class="user" autofocus="autofocus">
+				</div>
+				<div style="float: left;margin-top: 10px;">
+					<label style="float: left;">密码</label><input style="float: left;" type="password" name="loginPassword" class="pwd" />
+				</div>
+				<section class="row-fluid">
+					<section class="span1">
+						<input id="loginBtn"  style="float: left;margin-top: 10px;margin-left: 40%" type="button" value=" 登录 " class="btn btn-primary login">
+					</section>
+				</section>
+				<div style="float: left;margin-top: 10px;width: 100%;margin-left:33% ">
+					<label style="float: left;color: red;" class="error-info"></label>
+				</div>
+			</section>
+			</form>
+		</section>
+		<!-- /loginBox -->
+	</div>
+	<!-- /container -->
+	<script type="text/javascript">
+  		$.namespace("druid.login");
+   		druid.login = function () {  
+   			return  {
+	  			login : function() {
+	  				$.ajax({
+	  				  type: 'POST',
+	  				  url: "submitLogin",
+	  				  data: $("#loginForm").serialize(),
+	  				  success: function(data) {
+	  					if("success" == data)
+	  						location.href = "index.html";
+	  					else {
+	  						$("#alertInfo").show();
+	  						$("#loginForm")[0].reset();
+							$("input[name=loginUsername]").focus();
+	  					}
+	  				  },
+	  				  dataType: "text"
+	  				});
+	  			},
+				unamecr : function(e) {
+					if(e.which == 13) { // enter key event
+						$("input[name=loginPassword]").focus();
+					}
+				},
+				upasscr : function(e) {
+					if(e.which == 13) { // enter key event
+						$("#loginBtn").click();
+					}
+				}
+   			}
+  		}();
+
+  		$(document).ready(function() {
+  			$("#loginBtn").click(druid.login.login);
+  			$("input[name=loginUsername]").keypress(druid.login.unamecr);
+  			$("input[name=loginPassword]").keypress(druid.login.upasscr);
+ 		});
+  	</script>
+</body>
+</html>

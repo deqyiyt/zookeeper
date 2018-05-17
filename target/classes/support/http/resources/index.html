@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+<title>zookeeper 管理</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+<link rel="stylesheet" href="css/zTreeStyle.css">
+<link rel="stylesheet" href="css/demo.css">
+<link rel="stylesheet" href="css/ajaxfileupload.css">
+
+<script type="text/javascript" src="scripts/js/jquery.min.js"></script>
+<script type="text/javascript" src="scripts/js/jquery.cookie.js"></script>
+<script src="scripts/js/jquery.ztree.core-3.5.js"></script>
+<script src="scripts/js/ajaxfileupload.js"></script>
+<script src="scripts/pages/index.js"></script>
+
+<style type="text/css">
+input {
+	height: 30px;
+	font-size: 20px;
+}
+
+body {
+	margin: 0 10% 0 10%;
+}
+</style>
+
+</head>
+<body>
+	<div class="content_wrap" style="width: 100%;">
+		<div style="background-color: #f0f6e4;; margin-top: 10px;margin-bottom: 10px; ">
+			<h1 style="margin: 0 0 10px 0;font-size: 40px;line-height: 80px;">
+				zookeeper 管理
+			</h1>
+		</div>
+		<div style="background-color: #f0f6e4;min-height: 100px;line-height: 100px;">
+			<div style="float: left; margin-left: 20%;">
+				<label>zk地址</label>
+				<input type="text" class="zk-host" placeholder="如：127.0.0.1:2181">
+			</div>
+			<div style="float: left; margin-left: 10px;">
+				<label>根节点</label>
+				<input type="text" class="zk-root" placeholder="如：/">
+			</div>
+			<div style="float: left; margin-left: 10px">
+				<input type="button" class="set-zkhost" value="更换">
+			</div>
+		</div>
+		<table style="width: 100%;margin-top: 10px;min-height: 500px;">
+			<tr>
+				<td style="background-color: #f0f6e4;width: 400px;">
+					<ul id="treeDemo" class="ztree" style="width: 100%;width: 400px;height:100%;overflow-x:auto;overflow-y: hidden;border: 0;"></ul>
+				</td>
+				<td style="background-color: #f0f6e4;">
+						<div style="margin-top: 20px;">
+							<div style="margin-top: 10px; font-size: 24px;">
+								<div style="argin-top: 10px; margin-left: 10%;">
+									<label>目录</label>
+									<input type="text" class="zk-path" style="height: 30px;width: 500px;">
+								</div>
+								<div style="margin-top: 10px; margin-left: 10%; line-height: 100px;">
+									<label>数据</label>
+									<textarea cols="10" rows="10" class="zk-data" style="width: 500px; height: 80px;"></textarea>
+								</div>
+							</div>
+							<div style="margin-top: 10px;">
+								<div style="float: left; margin-top: 10px; margin-left: 10%;">
+									<input type="button" class="update-zk" value="修改数据">
+								</div>
+								<div style="float: left; margin-top: 10px; margin-left: 10px;">
+									<input type="button" value="创建目录" class="create-path">
+								</div>
+								<div style="float: left; margin-top: 10px; margin-left: 10px;">
+									<input type="button" value="删除目录" class="del-path">
+								</div>
+							</div>
+							<div style="float: left; margin-top: 10px; width: 100%;">
+								<div style="float: left; margin-top: 10px; margin-left: 10%;">
+									<input type="file" name="Filedata" id="uploadify" />
+								</div>
+								<div style="float: left; margin-top: 10px; margin-left: 10px;">
+									<input type="button" value="导入" style="height: 30px;" class="import-data">
+									<input type="button" value="导出" style="height: 30px;" class="export-data">
+								</div>
+							</div>
+						</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

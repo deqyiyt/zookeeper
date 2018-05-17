@@ -3,7 +3,6 @@ package com.ias.assembly.zkpro.zk.change.path;
 import java.util.List;
 
 import org.I0Itec.zkclient.ZkClient;
-import org.apache.zookeeper.CreateMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,17 +21,11 @@ public class ZkChildChangeManagerImpl implements ZkChildChangeManager {
 
 	@Override
 	public void changeData(String parentPath, List<String> currentChilds) {
-		log.debug("节点 {} >>>>>>>>>> {}", parentPath, currentChilds.toString());
+		log.debug("节点 {} >>>>>>>>>> {} >>>>>>> {}", parentPath, currentChilds.toString(), zkClient.readData(parentPath));
 	}
 
 	@Override
 	public String changePath() {
-		if(!zkClient.exists(changePath)) {
-            zkClient.create(changePath, null, CreateMode.EPHEMERAL);
-        }
 		return changePath;
 	}
-
-	
-
 }

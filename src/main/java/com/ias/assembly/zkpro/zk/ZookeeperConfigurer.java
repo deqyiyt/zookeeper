@@ -102,34 +102,37 @@ public class ZookeeperConfigurer extends PropertyPlaceholderConfigurer implement
 			}
 			try {
 				for (String znode : znodes.split(",")) {
-					List<String> children = zk.getChildren(znode.trim(), true);
-					for (String child : children) {
-						try {
-							byte[] data = zk.getData(znode + "/" + child, null, null);
-							String value = "";
-							if(data != null) {
-								value = new String(data);
+					znode = znode.trim();
+					if(zk.exists(znode, true) != null) {
+						List<String> children = zk.getChildren(znode, true);
+						for (String child : children) {
+							try {
+								byte[] data = zk.getData(znode + "/" + child, null, null);
+								String value = "";
+								if(data != null) {
+									value = new String(data);
+								}
+								if(value != null && value.startsWith("/") && zk.exists(value, true) != null) {
+									log.info("Zookeeper pathKey:{}\t value:{}", child, value);
+									zkprops.setProperty(child, value);
+									setProperty(zkprops, value);
+								} else {
+									log.info("Zookeeper key:{}\t value:{}", child, value);
+									zkprops.setProperty(child, value);
+								}
+							} catch (Exception e) {
+								log.error("Read property(key:{}) error", child);
+								log.error("Exception:", e);
 							}
-							if(value != null && value.startsWith("/") && zk.exists(value, true) != null) {
-								log.info("Zookeeper pathKey:{}\t value:{}", child, value);
-								zkprops.setProperty(child, value);
-								setProperty(zkprops, value);
-							} else {
-								log.info("Zookeeper key:{}\t value:{}", child, value);
-								zkprops.setProperty(child, value);
-							}
-						} catch (Exception e) {
-							log.error("Read property(key:{}) error", child);
-							log.error("Exception:", e);
 						}
 					}
 				}
 			} catch (KeeperException e) {
 				log.error("Failed to get property from zk server" + zkhost, e);
-				throw new ApplicationContextException("Failed to get property from zk server" + zkhost, e);
+//				throw new ApplicationContextException("Failed to get property from zk server" + zkhost, e);
 			} catch (InterruptedException e) {
 				log.error("Failed to get property from zk server" + zkhost, e);
-				throw new ApplicationContextException("Failed to get property from zk server" + zkhost, e);
+//				throw new ApplicationContextException("Failed to get property from zk server" + zkhost, e);
 			} finally {
 				try {
 					zk.close();

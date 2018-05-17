@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TestServiceTest {
 	
-	@Value("${ias.zk.cofing.host}")
+	@Value("${ias.web.wuliu:}")
 	private String test;
 	
 	@Autowired
