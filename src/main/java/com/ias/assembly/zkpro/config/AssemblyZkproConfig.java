@@ -1,6 +1,8 @@
 package com.ias.assembly.zkpro.config;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.serialize.ZkSerializer;
@@ -43,12 +45,12 @@ public class AssemblyZkproConfig {
 	@Bean
 	public PropertyResourceConfigurer zkConfigBean() throws IOException {
 		ZookeeperConfigurer configurer = new ZookeeperConfigurer();
-		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-		configurer.setLocations(resolver.getResources("classpath*:config/**/*.properties"));
-		configurer.setIgnoreResourceNotFound(true);
-		/*List<String> overrideLocaltions = new ArrayList<String>();
+		List<String> overrideLocaltions = new ArrayList<String>();
 		overrideLocaltions.add("file:/ias/config/ias-assembly-zkpro.properties");
-		configurer.setOverrideLocaltions(overrideLocaltions);*/
+		configurer.setOverrideLocaltions(overrideLocaltions);
+		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+		configurer.setLocations(resolver.getResources("classpath*:config/ias-assembly-zkpro.properties"));
+		configurer.setIgnoreResourceNotFound(true);
 		return configurer;
 	}
 	

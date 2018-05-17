@@ -6,7 +6,6 @@ import java.util.Properties;
 
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
@@ -19,14 +18,9 @@ import com.ias.assembly.zkpro.zk.bean.Ztree;
 import com.ias.assembly.zkpro.zk.common.ZkClient;
 import com.ias.assembly.zkpro.zk.common.ZkClientUtils;
 
-import lombok.extern.slf4j.Slf4j;
-
 //@Component("zkConfigBean")
-@Slf4j
 public class ZookeeperConfigurer extends PropertyPlaceholderConfigurer implements Watcher {
 
-	ZooKeeper zk = null;
-	
 	// 重写zookeeper中存储的配置
 	private List<String> overrideLocaltions;
 
@@ -93,9 +87,14 @@ public class ZookeeperConfigurer extends PropertyPlaceholderConfigurer implement
 	
 	protected void processProperties(ConfigurableListableBeanFactory beanFactoryToProcess, Properties zkprops)
 			throws BeansException {
+		Properties overProps = queryOverrideLocation();
+		// 将扩展的properties信息覆盖zookeeper获取的属性
+		copyProperties(zkprops, overProps);
+		
 		String zkhost = zkprops.getProperty("ias.zk.cofing.host");
 		String znodes = zkprops.getProperty("ias.zk.cofing.root");
-		if(zkhost != null && !"".equals(zkhost)) {
+		Boolean isOverlay = Boolean.valueOf(zkprops.getProperty("ias.zk.cofing.isOverlay"));
+		if(zkhost != null && !"".equals(zkhost) && isOverlay) {
 			ZkClient zk = ZkClientUtils.getInstance(zkhost);
 			for (String znode : znodes.split(",")) {
 				znode = znode.trim();
@@ -106,10 +105,7 @@ public class ZookeeperConfigurer extends PropertyPlaceholderConfigurer implement
 					});
 				}
 			}
-
-			Properties overProps = queryOverrideLocation();
-			// 将扩展的properties信息覆盖zookeeper获取的属性
-			copyProperties(zkprops, overProps);
+			
 			saveProperties(zkprops);
 		}
 		super.processProperties(beanFactoryToProcess, zkprops);

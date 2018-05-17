@@ -17,7 +17,7 @@ public class ZkProp {
 	 * @type String
 	 * @date 2018年5月17日 下午6:45:05
 	 */
-	private String host = "127.0.0.1:2181";
+	private String host;
 	
 	/**
 	 * 资源文件根路径，{@value}只能读取配置的资源文件下面的变量
@@ -32,6 +32,14 @@ public class ZkProp {
 	 * @date 2018年5月17日 下午6:45:24
 	 */
 	private int sessionTimeout = 30;
+	
+	/**
+	 * 是否将zookeeper中的资源文件覆盖掉本地资源文件
+	 * true:覆盖
+	 * false:不覆盖
+	 * @date 2018年5月17日 下午6:45:24
+	 */
+	private boolean isOverlay = false;
 	
 	/**
 	 * 管理控制台路径
