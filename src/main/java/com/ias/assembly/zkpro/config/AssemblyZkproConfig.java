@@ -26,6 +26,7 @@ import com.ias.assembly.zkpro.zk.prop.ZkProp;
 @Configuration
 @PropertySources({
     @PropertySource("classpath:config/ias-assembly-zkpro.properties"),
+	//优先读取物理位置资源文件，物理路径资源文件将会覆盖项目中的资源文件中的变量
     @PropertySource(value = "file:/ias/config/ias-assembly-zkpro.properties", ignoreResourceNotFound = true)
 })
 @EnableConfigurationProperties({ZkProp.class})
@@ -45,9 +46,13 @@ public class AssemblyZkproConfig {
 	@Bean
 	public PropertyResourceConfigurer zkConfigBean() throws IOException {
 		ZookeeperConfigurer configurer = new ZookeeperConfigurer();
+		
+		//读取项目资源文件
 		List<String> overrideLocaltions = new ArrayList<String>();
 		overrideLocaltions.add("file:/ias/config/ias-assembly-zkpro.properties");
 		configurer.setOverrideLocaltions(overrideLocaltions);
+		
+		//优先读取物理位置资源文件，物理路径资源文件将会覆盖项目中的资源文件中的变量
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 		configurer.setLocations(resolver.getResources("classpath*:config/ias-assembly-zkpro.properties"));
 		configurer.setIgnoreResourceNotFound(true);
@@ -55,7 +60,7 @@ public class AssemblyZkproConfig {
 	}
 	
 	@Bean
-    public ServletRegistrationBean druidStatViewServlet(ZkProp zkProp) {
+    public ServletRegistrationBean zkViewServlet(ZkProp zkProp) {
 		ServletRegistrationBean registration = new ServletRegistrationBean(new StatViewServlet(), zkProp.getContextPath());
 		registration.addInitParameter("loginUsername", zkProp.getUserName());// 用户名
 		registration.addInitParameter("loginPassword", zkProp.getPassword());// 密码
