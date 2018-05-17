@@ -6,6 +6,7 @@ import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.serialize.ZkSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertyResourceConfigurer;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -22,8 +23,10 @@ import com.ias.assembly.zkpro.zk.prop.ZkProp;
 
 @Configuration
 @PropertySources({
+    @PropertySource("classpath:config/ias-assembly-zkpro.properties"),
     @PropertySource(value = "file:/ias/config/ias-assembly-zkpro.properties", ignoreResourceNotFound = true)
 })
+@EnableConfigurationProperties({ZkProp.class})
 @ComponentScan(basePackages = {"com.ias.assembly.zkpro.zk"})
 public class AssemblyZkproConfig {
 	
@@ -50,10 +53,10 @@ public class AssemblyZkproConfig {
 	}
 	
 	@Bean
-    public ServletRegistrationBean druidStatViewServlet() {
-		ServletRegistrationBean registration = new ServletRegistrationBean(new StatViewServlet(), "/zk-manager/*");
-		registration.addInitParameter("loginUsername", "admin");// 用户名
-		registration.addInitParameter("loginPassword", "admin");// 密码
+    public ServletRegistrationBean druidStatViewServlet(ZkProp zkProp) {
+		ServletRegistrationBean registration = new ServletRegistrationBean(new StatViewServlet(), zkProp.getContextPath());
+		registration.addInitParameter("loginUsername", zkProp.getUserName());// 用户名
+		registration.addInitParameter("loginPassword", zkProp.getPassword());// 密码
         return registration;
     }
 }
