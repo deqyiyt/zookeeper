@@ -8,4 +8,4 @@
 访问地址：http://127.0.0.1:8080/zk-manager    
 用户名：admin    
 密码：admin    
-在AssemblyZkproConfig中可修改    
+在config/ias-assembly-zkpro.properties中可修改    
